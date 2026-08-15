@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Menu,
   ShoppingBag,
@@ -11,6 +11,7 @@ import {
   Search,
   Camera,
   Check,
+  UserRound,
 } from "lucide-react";
 import "./index.css";
 
@@ -64,21 +65,44 @@ const products = [
     image: "https://images.unsplash.com/photo-1625910513413-5fc45e8ae8b1?auto=format&fit=crop&w=900&q=80",
   },
 ];
+const API_URL = "http://127.0.0.1:4242";
 
 const categories = ["All", "Shirts", "Blazers", "Suits", "Trousers", "T-Shirts"];
 
 function App() {
   const [menu, setMenu] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
   const [category, setCategory] = useState("All");
   const [cart, setCart] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+const [ordersSearched, setOrdersSearched] = useState(false);
+  const [ordersLoaded, setOrdersLoaded] = useState(false);
   const [selectedSize, setSelectedSize] = useState({});
   const [wishlist, setWishlist] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [detailQty, setDetailQty] = useState(1);
+
+  useEffect(() => {
+    try {
+      const savedOrders = JSON.parse(localStorage.getItem("shyamOrders") || "[]");
+      setOrders(savedOrders);
+    } catch {
+      setOrders([]);
+    } finally {
+      setOrdersLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (ordersLoaded) {
+      localStorage.setItem("shyamOrders", JSON.stringify(orders));
+    }
+  }, [orders, ordersLoaded]);
 
   const [customer, setCustomer] = useState({
     name: "",
@@ -89,6 +113,49 @@ function App() {
     payment: "COD",
   });
 
+const loadOrders = async () => {
+
+  if (!customer.phone.trim()) {
+    setOrders([]);
+    setOrdersLoaded(true);
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/orders?phone=${encodeURIComponent(customer.phone.trim())}`
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "Unable to load orders");
+    }
+
+    const formattedOrders = result.orders.map((order) => ({
+      id: order.id,
+      date: new Date(order.created_at).toLocaleString("en-IN"),
+      customer: {
+        name: order.customer_name,
+        phone: order.customer_phone,
+        address: order.customer_address,
+        city: order.customer_city,
+        pincode: order.customer_pincode,
+        payment: order.payment_method,
+      },
+      items: order.items || [],
+      total: order.total,
+      status: order.status,
+    }));
+
+    setOrders(formattedOrders);
+  } catch (error) {
+    console.error("Order history error:", error);
+    setOrders([]);
+  } finally {
+    setOrdersLoaded(true);
+  }
+};
   const filtered = products.filter((p) => {
     const matchesCategory = category === "All" || p.category === category;
     const matchesSearch =
@@ -156,7 +223,7 @@ function App() {
     }));
   };
 
-  const placeOrder = (event) => {
+  const placeOrder = async (event) => {
     event.preventDefault();
 
     if (!cart.length) return;
@@ -184,6 +251,41 @@ Please confirm my order.
 
 Thank you,
 Shyam Enterprises`; 
+
+    const newOrder = {
+      id: orderId,
+      date: new Date().toLocaleString("en-IN"),
+      customer: { ...customer },
+      items: cart.map((item) => ({ ...item })),
+      total,
+      status: "Order Placed",
+    };
+try {
+  const response = await fetch(`${API_URL}/api/orders`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: orderId,
+      customer,
+      items: cart,
+      total,
+      status: "Order Placed",
+    }),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Unable to save order");
+  }
+} catch (error) {
+  console.error("Order save failed:", error);
+  alert("We couldn't save your order. Please try again.");
+  return;
+}
+    setOrders((current) => [newOrder, ...current]);
 
     setOrderComplete(true);
 
@@ -242,7 +344,15 @@ Shyam Enterprises`;
           SHYAM
           <span>ENTERPRISES</span>
         </div>
-
+<button
+  className="accountBtn"
+  onClick={() => {    
+    setAccountOpen(true);
+}}
+      aria-label="My Account"
+>
+  <UserRound />
+</button>
         <button className="cartBtn" onClick={() => setCartOpen(true)}>
           <ShoppingBag />
           {cartCount > 0 && <b>{cartCount}</b>}
@@ -418,7 +528,7 @@ Shyam Enterprises`;
         <p>Premium Menswear • Surat</p>
 
         <div className="socials">
-          <Camera />
+          <span className="instagramComingSoon" title="Instagram coming soon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></span>
           <MessageCircle />
         </div>
 
@@ -429,13 +539,156 @@ Shyam Enterprises`;
 
       <a
         className="whatsapp"
-        href="https://wa.me/"
+        href="https://wa.me/919428342361"
         target="_blank"
         rel="noreferrer"
       >
         <MessageCircle />
       </a>
 
+{accountOpen && (
+  <div
+    className="cartBackdrop"
+    onClick={() => setAccountOpen(false)}
+  >
+    <aside
+      className="cart accountPanel"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="cartHeader">
+        <div>
+          <p>MY ACCOUNT</p>
+          <h2>My Account</h2>
+        </div>
+
+        <button onClick={() => setAccountOpen(false)}>
+          <X />
+        </button>
+      </div>
+
+      <div className="accountWelcome">
+        <div className="accountIcon">
+          <UserRound size={32} />
+        </div>
+
+        <h3>Welcome to Shyam Enterprises</h3>
+        <p>Manage your profile and view your orders.</p>
+      </div>
+
+      <div className="accountSection">
+        <h3>MY ORDERS</h3>
+
+        {!ordersSearched ? (
+          <div className="accountEmpty">
+            <UserRound size={36} />
+
+            <strong>Find Your Orders</strong>
+
+            <p>
+              Enter the phone number used when placing your order.
+            </p>
+
+            <input
+              type="tel"
+              value={customer.phone}
+              onChange={(e) =>
+                setCustomer({
+                  ...customer,
+                  phone: e.target.value,
+                })
+              }
+              placeholder="Phone number"
+              maxLength={10}
+              className="accountPhoneInput"
+            />
+
+            <button
+  onClick={() => {
+    if (customer.phone.trim().length !== 10) {
+      return;
+    }
+
+    setOrdersSearched(true);
+    setOrdersLoaded(false);
+    loadOrders();
+  }}
+>            
+             VIEW MY ORDERS
+            </button>
+          </div>
+        ) : orders.length === 0 ? (
+          <div className="accountEmpty">
+            <ShoppingBag size={36} />
+
+            <strong>No orders found</strong>
+
+            <p>
+              No orders were found for this phone number.
+            </p>
+
+<button
+  onClick={() => {
+    setCustomer({
+      ...customer,
+      phone: "",
+    });
+    setOrders([]);
+    setOrdersSearched(false);
+  }}
+>
+              TRY ANOTHER NUMBER
+            </button>
+          </div>
+        ) : (
+          <div className="orderList">
+            {orders.map((order) => (
+              <div
+                className="orderCard"
+                key={order.id}
+                onClick={() => setSelectedOrder(order)}
+                role="button"
+                tabIndex={0}
+              >
+                <div className="orderCardTop">
+                  <div>
+                    <strong>{order.id}</strong>
+                    <small>{order.date}</small>
+                  </div>
+
+                  <span className="orderStatus">
+                    {order.status}
+                  </span>
+                </div>
+
+                <div className="orderCardItems">
+                  {order.items.map((item, index) => (
+                    <div key={`${order.id}-${index}`}>
+                      <span>
+                        {item.name} × {item.qty}
+                      </span>
+
+                      <small>
+                        Size: {item.size}
+                      </small>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="orderCardBottom">
+                  <span>Total</span>
+
+                  <strong>
+                    ₹{Number(order.total).toLocaleString("en-IN")}
+                  </strong>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </aside>
+  </div>
+)}
       {cartOpen && (
         <div className="cartBackdrop" onClick={() => setCartOpen(false)}>
           <aside className="cart" onClick={(e) => e.stopPropagation()}>

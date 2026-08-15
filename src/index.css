@@ -1300,3 +1300,402 @@ footer {
   color: red;
 }
 
+
+.accountPanel {
+  padding-bottom: 28px;
+}
+
+.accountWelcome {
+  text-align: center;
+  padding: 28px 20px 22px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.accountIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #222;
+}
+
+.accountWelcome h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.accountWelcome p {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.accountSection {
+  padding: 24px 20px;
+}
+
+.accountSection > h3 {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
+}
+
+.accountEmpty {
+  text-align: center;
+  border: 1px solid #e5e5e5;
+  padding: 30px 20px;
+}
+
+.accountEmpty svg {
+  margin-bottom: 12px;
+}
+
+.accountEmpty strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.accountEmpty p {
+  color: #777;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.accountEmpty button {
+  border: 0;
+  background: #111;
+  color: #fff;
+  padding: 13px 20px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+
+.accountPanel {
+  padding-bottom: 28px;
+}
+
+.accountWelcome {
+  text-align: center;
+  padding: 28px 20px 22px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.accountIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #222;
+}
+
+.accountWelcome h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.accountWelcome p {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.accountSection {
+  padding: 24px 20px;
+}
+
+.accountSection > h3 {
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
+}
+
+.accountEmpty {
+  text-align: center;
+  border: 1px solid #e5e5e5;
+  padding: 30px 20px;
+}
+
+.accountEmpty svg {
+  margin-bottom: 12px;
+}
+
+.accountEmpty strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.accountEmpty p {
+  color: #777;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.accountEmpty button {
+  border: 0;
+  background: #111;
+  color: #fff;
+  padding: 13px 20px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+
+
+.orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.orderCard {
+  border: 1px solid #e5e5e5;
+  padding: 16px;
+}
+
+.orderCardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.orderCardTop strong {
+  display: block;
+  font-size: 14px;
+}
+
+.orderCardTop small {
+  display: block;
+  margin-top: 5px;
+  color: #777;
+  font-size: 11px;
+}
+
+.orderStatus {
+  height: fit-content;
+  padding: 5px 8px;
+  background: #111;
+  color: #fff;
+  font-size: 9px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.orderCardItems {
+  padding: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.orderCardItems div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.orderCardItems small {
+  color: #777;
+  white-space: nowrap;
+}
+
+.orderCardBottom {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+  font-size: 13px;
+}
+
+.orderDetailsPanel {
+  padding-bottom: 28px;
+}
+
+.orderTimeline {
+  padding: 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.timelineStep {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  padding-bottom: 18px;
+}
+
+.timelineStep:last-child {
+  padding-bottom: 0;
+}
+
+.timelineStep > span {
+  width: 25px;
+  height: 25px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 25px;
+  font-size: 10px;
+  background: #fff;
+  z-index: 1;
+}
+
+.timelineStep.active > span {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+.timelineStep:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 25px;
+  bottom: 0;
+  width: 1px;
+  background: #ddd;
+}
+
+.timelineStep div {
+  padding-top: 3px;
+}
+
+.timelineStep strong,
+.timelineStep small {
+  display: block;
+}
+
+.timelineStep strong {
+  font-size: 12px;
+}
+
+.timelineStep small {
+  color: #777;
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+.orderDetailSection {
+  padding: 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.orderDetailHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.orderDetailHeading h3,
+.deliveryDetails h3 {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 1.3px;
+}
+
+.orderDetailHeading span {
+  color: #777;
+  font-size: 11px;
+}
+
+.orderDetailItem {
+  display: grid;
+  grid-template-columns: 55px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.orderDetailItem:last-child {
+  margin-bottom: 0;
+}
+
+.orderDetailItem img {
+  width: 55px;
+  height: 68px;
+  object-fit: cover;
+}
+
+.orderDetailItem strong {
+  font-size: 12px;
+}
+
+.orderDetailItem small {
+  display: block;
+  color: #777;
+  margin-top: 5px;
+  font-size: 10px;
+}
+
+.orderSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.orderSummary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  font-size: 12px;
+}
+
+.deliveryDetails p {
+  margin: 6px 0 0;
+  color: #555;
+  font-size: 12px;
+}
+
+.orderSupportButton {
+  margin: 20px;
+  width: calc(100% - 40px);
+  border: 0;
+  background: #111;
+  color: #fff;
+  padding: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.accountPhoneInput {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  padding: 13px 12px;
+  margin: 15px 0 10px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+}
+
+.accountPhoneInput:focus {
+  border-color: #111;
+}
+
+.accountEmpty button {
+  border: 0;
+  background: #111;
+  color: #fff;
+  padding: 13px 20px;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
