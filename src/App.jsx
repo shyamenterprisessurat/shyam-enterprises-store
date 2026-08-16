@@ -15,6 +15,10 @@ import {
 } from "lucide-react";
 import "./index.css";
 
+import { supabase } from "./supabase";
+import AdminLogin from "./AdminLogin";
+import AdminPanel from "./AdminPanel";
+
 const products = [
   {
     id: 1,
@@ -86,6 +90,11 @@ const [ordersSearched, setOrdersSearched] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [detailQty, setDetailQty] = useState(1);
+  const [storeProducts, setStoreProducts] = useState(products);
+
+const [adminUser, setAdminUser] = useState(null);
+const [adminLoginOpen, setAdminLoginOpen] = useState(false);
+const [adminPanelOpen, setAdminPanelOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -96,10 +105,61 @@ const [ordersSearched, setOrdersSearched] = useState(false);
     } finally {
       setOrdersLoaded(true);
     }
+
+  }, []);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user) {
+        setAdminUser(data.session.user);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAdminUser(session?.user || null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const loadStoreProducts = async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Product loading error:", error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const formattedProducts = data.map((product) => ({
+          id: product.id,
+          name: product.name,
+          category: product.category,
+          price: Number(product.price),
+          sizes: product.sizes || [],
+          image: product.image_url,
+          description: product.description || "",
+        }));
+
+        setStoreProducts(formattedProducts);
+      }
+    };
+
+    loadStoreProducts();
   }, []);
 
   useEffect(() => {
     if (ordersLoaded) {
+
       localStorage.setItem("shyamOrders", JSON.stringify(orders));
     }
   }, [orders, ordersLoaded]);
@@ -156,7 +216,7 @@ const loadOrders = async () => {
     setOrdersLoaded(true);
   }
 };
-  const filtered = products.filter((p) => {
+  const filtered = storeProducts.filter((p) => {
     const matchesCategory = category === "All" || p.category === category;
     const matchesSearch =
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -535,6 +595,20 @@ try {
         <small>
           © 2026 Shyam Enterprises. All rights reserved.
         </small>
+
+        <button
+          className="adminAccess"
+          onClick={() => {
+            if (adminUser) {
+              setAdminPanelOpen(true);
+            } else {
+              setAdminLoginOpen(true);
+            }
+          }}
+        >
+          ADMIN
+        </button>
+
       </footer>
 
       <a
@@ -958,7 +1032,25 @@ try {
           </div>
         </div>
       )}
-      {productDetail}
+      
+      {adminLoginOpen && !adminUser && (
+        <AdminLogin
+          onClose={() => setAdminLoginOpen(false)}
+          onLogin={(user) => {
+            setAdminUser(user);
+            setAdminLoginOpen(false);
+            setAdminPanelOpen(true);
+          }}
+        />
+      )}
+
+      {adminPanelOpen && adminUser && (
+        <AdminPanel
+          onClose={() => setAdminPanelOpen(false)}
+        />
+      )}
+
+{productDetail}
     </div>
   );
 }
